@@ -19,10 +19,16 @@ let posY = 0;
 
 function drawGrid() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  for (let y = 0; y < ROWS; y++) {
+  ctx.strokeStyle = "black";
+  // ctx.lineWidth = 1;
+  //let y=2, because I can not set posY to negative -2, because it is relatited to
+  //the index of grid matrix. so I set y=2;
+  //to hide the top two rows of grid where the shape is generated.
+  for (let y = 2; y < ROWS; y++) {
     for (let x = 0; x < COLS; x++) {
       if (grid[y][x] === 0) {
         ctx.fillStyle = "white";
+
         // ctx.strokeStyle = "red";
       } else {
         ctx.fillStyle = "blue";
@@ -39,18 +45,21 @@ function drawShape() {
     for (let x = 0; x < currentShape[y].length; x++) {
       if (currentShape[y][x]) {
         ctx.fillStyle = "blue";
-        ctx.fillRect(
-          (posX + x) * BLOCK_SIZE,
-          (posY + y) * BLOCK_SIZE,
-          BLOCK_SIZE,
-          BLOCK_SIZE
-        );
-        ctx.strokeRect(
-          (posX + x) * BLOCK_SIZE,
-          (posY + y) * BLOCK_SIZE,
-          BLOCK_SIZE,
-          BLOCK_SIZE
-        );
+        //to draw when the shape drop into the white grid area
+        if (posY > -1) {
+          ctx.fillRect(
+            (posX + x) * BLOCK_SIZE,
+            (posY + y) * BLOCK_SIZE,
+            BLOCK_SIZE,
+            BLOCK_SIZE
+          );
+          ctx.strokeRect(
+            (posX + x) * BLOCK_SIZE,
+            (posY + y) * BLOCK_SIZE,
+            BLOCK_SIZE,
+            BLOCK_SIZE
+          );
+        }
       }
     }
   }
@@ -124,9 +133,19 @@ function clearLines() {
   }
 }
 
+function gameLoop() {
+  drawGrid();
+  drawShape();
+}
+
 function update() {
   if (!checkCollision(currentShape, posX, posY + 1)) {
     posY++;
+  } else if (checkCollision(currentShape, posX, posY)) {
+    fixShape();
+
+    alert("hi");
+    currentShape = [];
   } else {
     fixShape();
     clearLines();
@@ -134,19 +153,31 @@ function update() {
   }
 }
 
-function gameLoop() {
-  drawGrid();
-  drawShape();
-}
 //real actions
 function gameRun1() {
   gameLoop();
   update();
 }
 
-const updateInterval = setInterval(() => {
-  gameRun1();
-}, 3000);
+let intervalId;
+
+function startInverval() {
+  intervalId = setInterval(() => {
+    gameRun1();
+  }, 1000);
+}
+
+startInverval();
+// const updateInterval = setInterval(() => {
+//   gameRun1();
+// }, 1000);
+
+function restartInterval() {
+  if (intervalId) {
+    clearInterval(intervalId);
+    startInverval();
+  }
+}
 
 //to move left right and down
 document.addEventListener("keydown", (event) => {
@@ -180,8 +211,43 @@ document.addEventListener("keydown", (event) => {
 const btnP = document.querySelector(".pause");
 // const btnC = document.querySelector(".continue");
 btnP.addEventListener("click", function () {
-  clearInterval(updateInterval);
+  clearInterval(intervalId);
 });
+//continue;
+const btnC = document.querySelector(".continue");
+btnC.addEventListener("click", function () {
+  restartInterval();
+});
+
+////Restart the game
+const btnRe = document.querySelector(".restart");
+btnRe.addEventListener("click", function () {
+  //to set the grid and shape to its original value
+  grid = Array.from({ length: ROWS }, () => Array(COLS).fill(0));
+  currentShape = [
+    [1, 1, 1],
+    [1, 1, 0],
+  ];
+  posX = 2;
+  posY = 0;
+  //loop the game;
+  restartInterval();
+});
+
+//when the shapes add up to the top, show message, the game ends, restart
+// function gameEnds() {
+//   for (let x = 0; x < COLS; x++) {
+//     if (grid.every((row) => row[x] === 1)) {
+//       alert("Game ends. Restart.");
+//     }
+//   }
+// }
+
+function gameEnds() {
+  if (checkCollision(currentShape, posX, posY)) {
+    alert("Game ends");
+  } else return;
+}
 
 // btnC.addEventListener("click", function () {
 //   setInterval(() => {
