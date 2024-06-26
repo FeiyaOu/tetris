@@ -31,7 +31,7 @@ function drawGrid() {
 
         // ctx.strokeStyle = "red";
       } else {
-        ctx.fillStyle = "blue";
+        ctx.fillStyle = "lightseagreen";
         // ctx.strokeStyle = "red";
       }
       ctx.fillRect(x * BLOCK_SIZE, y * BLOCK_SIZE, BLOCK_SIZE, BLOCK_SIZE);
@@ -44,7 +44,7 @@ function drawShape() {
   for (let y = 0; y < currentShape.length; y++) {
     for (let x = 0; x < currentShape[y].length; x++) {
       if (currentShape[y][x]) {
-        ctx.fillStyle = "blue";
+        ctx.fillStyle = "lightseagreen";
         //to draw when the shape drop into the white grid area
         if (posY > -1) {
           ctx.fillRect(
@@ -110,13 +110,18 @@ function generateNewShape() {
       [0, 1, 0],
     ],
     [
-      [1, 1, 1],
+      [1, 1],
+      [1, 1],
+    ],
+    [
+      [1, 0, 0],
       [1, 1, 1],
     ],
     [
-      [1, 0, 0, 0],
-      [1, 1, 1, 1],
+      [1, 1, 0],
+      [0, 1, 1],
     ],
+    [[1, 1, 1, 1]],
   ];
   const n = shapeArray.length;
   currentShape = shapeArray[Math.floor(Math.random() * n)];
@@ -124,11 +129,16 @@ function generateNewShape() {
   posY = 0;
 }
 
+const score = document.querySelector(".score");
+
+let scoreUpdated = 0;
 function clearLines() {
   for (let y = 0; y < ROWS; y++) {
     if (grid[y].every((cell) => cell === 1)) {
       grid.splice(y, 1);
       grid.unshift(Array(COLS).fill(0));
+      scoreUpdated++;
+      score.textContent = scoreUpdated * 10;
     }
   }
 }
@@ -138,13 +148,17 @@ function gameLoop() {
   drawShape();
 }
 
+const messageBox = document.querySelector(".messages");
+const messageAdded = document.createElement("div");
+messageAdded.classList.add("message");
+messageAdded.textContent = "Game Over!";
 function update() {
   if (!checkCollision(currentShape, posX, posY + 1)) {
     posY++;
   } else if (checkCollision(currentShape, posX, posY)) {
     fixShape();
 
-    alert("hi");
+    messageBox.prepend(messageAdded);
     currentShape = [];
   } else {
     fixShape();
@@ -188,6 +202,13 @@ document.addEventListener("keydown", (event) => {
 });
 
 document.addEventListener("keydown", (event) => {
+  if (event.code === "KeyA") {
+    rotateShapeAnti();
+    gameLoop();
+  }
+});
+
+document.addEventListener("keydown", (event) => {
   if (event.code === "ArrowLeft") {
     moveLeftShape();
     gameLoop();
@@ -222,6 +243,7 @@ btnC.addEventListener("click", function () {
 ////Restart the game
 const btnRe = document.querySelector(".restart");
 btnRe.addEventListener("click", function () {
+  messageAdded.remove();
   //to set the grid and shape to its original value
   grid = Array.from({ length: ROWS }, () => Array(COLS).fill(0));
   currentShape = [
@@ -261,6 +283,21 @@ function rotateMatrix(matrix) {
     matrix.map((row) => row[index]).reverse()
   );
   return rotated;
+}
+
+function rotateMatrixAnti(matrix) {
+  const rotated1 = matrix.map((row) => row.reverse());
+  const rotated2 = rotated1[0].map((_, index) =>
+    rotated1.map((row) => row[index])
+  );
+  return rotated2;
+}
+
+function rotateShapeAnti() {
+  const rotatedShape = rotateMatrixAnti(currentShape);
+  if (!checkCollision(rotatedShape, posX, posY)) {
+    currentShape = rotatedShape;
+  }
 }
 
 function rotateShape() {
