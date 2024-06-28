@@ -10,10 +10,13 @@ const BLOCK_SIZE = 30;
 let grid = Array.from({ length: ROWS }, () => Array(COLS).fill(0));
 console.log(grid);
 
-let currentShape = [
-  [1, 1, 1],
-  [1, 1, 0],
-];
+let currentShape = {
+  shape: [
+    [1, 1, 1],
+    [1, 1, 0],
+  ],
+  color: "orange",
+};
 let posX = 2;
 let posY = 0;
 
@@ -41,10 +44,10 @@ function drawGrid() {
 }
 
 function drawShape() {
-  for (let y = 0; y < currentShape.length; y++) {
-    for (let x = 0; x < currentShape[y].length; x++) {
-      if (currentShape[y][x]) {
-        ctx.fillStyle = "lightseagreen";
+  for (let y = 0; y < currentShape.shape.length; y++) {
+    for (let x = 0; x < currentShape.shape[y].length; x++) {
+      if (currentShape.shape[y][x]) {
+        ctx.fillStyle = currentShape.color;
         //to draw when the shape drop into the white grid area
         if (posY > -1) {
           ctx.fillRect(
@@ -82,9 +85,9 @@ function checkCollision(shape, offsetX, offsetY) {
 }
 
 function fixShape() {
-  for (let y = 0; y < currentShape.length; y++) {
-    for (let x = 0; x < currentShape[y].length; x++) {
-      if (currentShape[y][x]) {
+  for (let y = 0; y < currentShape.shape.length; y++) {
+    for (let x = 0; x < currentShape.shape[y].length; x++) {
+      if (currentShape.shape[y][x]) {
         grid[posY + y][posX + x] = 1;
       }
     }
@@ -105,23 +108,35 @@ function fixShape() {
 ///////////////////
 function generateNewShape() {
   const shapeArray = [
-    [
-      [1, 1, 1],
-      [0, 1, 0],
-    ],
-    [
-      [1, 1],
-      [1, 1],
-    ],
-    [
-      [1, 0, 0],
-      [1, 1, 1],
-    ],
-    [
-      [1, 1, 0],
-      [0, 1, 1],
-    ],
-    [[1, 1, 1, 1]],
+    {
+      shape: [
+        [1, 1, 1],
+        [0, 1, 0],
+      ],
+      color: "red",
+    },
+    {
+      shape: [
+        [1, 1],
+        [1, 1],
+      ],
+      color: "blue",
+    },
+    {
+      shape: [
+        [1, 0, 0],
+        [1, 1, 1],
+      ],
+      color: "purple",
+    },
+    {
+      shape: [
+        [1, 1, 0],
+        [0, 1, 1],
+      ],
+      color: "pink",
+    },
+    { shape: [[1, 1, 1, 1]], color: "green" },
   ];
   const n = shapeArray.length;
   currentShape = shapeArray[Math.floor(Math.random() * n)];
@@ -153,9 +168,9 @@ const messageAdded = document.createElement("div");
 messageAdded.classList.add("message");
 messageAdded.textContent = "Game Over!";
 function update() {
-  if (!checkCollision(currentShape, posX, posY + 1)) {
+  if (!checkCollision(currentShape.shape, posX, posY + 1)) {
     posY++;
-  } else if (checkCollision(currentShape, posX, posY)) {
+  } else if (checkCollision(currentShape.shape, posX, posY)) {
     fixShape();
 
     messageBox.prepend(messageAdded);
@@ -246,10 +261,13 @@ btnRe.addEventListener("click", function () {
   messageAdded.remove();
   //to set the grid and shape to its original value
   grid = Array.from({ length: ROWS }, () => Array(COLS).fill(0));
-  currentShape = [
-    [1, 1, 1],
-    [1, 1, 0],
-  ];
+  currentShape = {
+    shape: [
+      [1, 1, 1],
+      [1, 1, 0],
+    ],
+    color: "orange",
+  };
   posX = 2;
   posY = 0;
   //loop the game;
@@ -266,7 +284,7 @@ btnRe.addEventListener("click", function () {
 // }
 
 function gameEnds() {
-  if (checkCollision(currentShape, posX, posY)) {
+  if (checkCollision(currentShape.shape, posX, posY)) {
     alert("Game ends");
   } else return;
 }
@@ -294,33 +312,33 @@ function rotateMatrixAnti(matrix) {
 }
 
 function rotateShapeAnti() {
-  const rotatedShape = rotateMatrixAnti(currentShape);
+  const rotatedShape = rotateMatrixAnti(currentShape.shape);
   if (!checkCollision(rotatedShape, posX, posY)) {
-    currentShape = rotatedShape;
+    currentShape.shape = rotatedShape;
   }
 }
 
 function rotateShape() {
-  const rotatedShape = rotateMatrix(currentShape);
+  const rotatedShape = rotateMatrix(currentShape.shape);
   if (!checkCollision(rotatedShape, posX, posY)) {
-    currentShape = rotatedShape;
+    currentShape.shape = rotatedShape;
   }
 }
 //to move left right and down
 function moveLeftShape() {
-  if (!checkCollision(currentShape, posX - 1, posY)) {
+  if (!checkCollision(currentShape.shape, posX - 1, posY)) {
     posX--;
   }
 }
 
 function moveRightShape() {
-  if (!checkCollision(currentShape, posX + 1, posY)) {
+  if (!checkCollision(currentShape.shape, posX + 1, posY)) {
     posX++;
   }
 }
 
 function moveDownShape() {
-  if (!checkCollision(currentShape, posX, posY + 1)) {
+  if (!checkCollision(currentShape.shape, posX, posY + 1)) {
     posY++;
   }
 }
