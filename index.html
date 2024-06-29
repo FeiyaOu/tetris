@@ -3,60 +3,27 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Abel&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+    <script defer src="tetris.js"></script>
     <title>Tetris Game</title>
-    <style>
-      body {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        /* background-color: black; */
-        background-image: url(background-nightSky1.jpg);
-        background-size: cover;
-      }
-      .box {
-        display: flex;
-        justify-content: center;
-        gap: 50px;
-      }
-      .box-right {
-        /* background-color: pink; */
-
-        display: flex;
-        flex-direction: column;
-        align-items: flex-start;
-        justify-content: flex-end;
-        gap: 20px;
-      }
-      canvas {
-        border: 1px solid black;
-      }
-
-      /* .continue {
-        margin-top: 20px;
-      } */
-      header {
-        font-size: 50px;
-        color: white;
-        margin-bottom: 20px;
-      }
-
-      button {
-        font-size: 20px;
-        padding: 5px;
-      }
-      .message {
-        font-size: 30px;
-        color: white;
-      }
-    </style>
   </head>
   <body>
     <header>Tetris Game</header>
     <div class="box">
       <canvas id="gameCanvas" width="300" height="600"></canvas>
       <div class="box-right">
+        <audio id="bg-music" loop>
+          <source src="musicBackground.mp3" type="audio/mpeg" />
+        </audio>
         <div class="messages">
-          <div class="message">
+          <div class="message scoreInfo">
             <p>Your score: <span class="score">0</span></p>
           </div>
           <div class="message"><p>Space key for rotating clockwise</p></div>
@@ -68,6 +35,5 @@
         <button class="restart">restart</button>
       </div>
     </div>
-    <script src="tetris.js"></script>
   </body>
 </html>

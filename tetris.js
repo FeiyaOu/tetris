@@ -2,6 +2,10 @@
 
 const canvas = document.getElementById("gameCanvas");
 const ctx = canvas.getContext("2d");
+const bgMusic = document.getElementById("bg-music");
+document.addEventListener("DOMContentLoaded", (event) => {
+  bgMusic.play();
+});
 
 const ROWS = 20;
 const COLS = 10;
@@ -27,7 +31,7 @@ function drawGrid() {
   //let y=2, because I can not set posY to negative -2, because it is relatited to
   //the index of grid matrix. so I set y=2;
   //to hide the top two rows of grid where the shape is generated.
-  for (let y = 2; y < ROWS; y++) {
+  for (let y = 1; y < ROWS; y++) {
     for (let x = 0; x < COLS; x++) {
       if (grid[y][x] === 0) {
         ctx.fillStyle = "white";
@@ -49,7 +53,7 @@ function drawShape() {
       if (currentShape.shape[y][x]) {
         ctx.fillStyle = currentShape.color;
         //to draw when the shape drop into the white grid area
-        if (posY > -1) {
+        if (posY > 0) {
           ctx.fillRect(
             (posX + x) * BLOCK_SIZE,
             (posY + y) * BLOCK_SIZE,
@@ -113,30 +117,37 @@ function generateNewShape() {
         [1, 1, 1],
         [0, 1, 0],
       ],
-      color: "red",
+      color: "#FA5A5A",
     },
     {
       shape: [
         [1, 1],
         [1, 1],
       ],
-      color: "blue",
+      color: "#6CC55F",
     },
     {
       shape: [
         [1, 0, 0],
         [1, 1, 1],
       ],
-      color: "purple",
+      color: "#C878E6",
     },
     {
       shape: [
         [1, 1, 0],
         [0, 1, 1],
       ],
-      color: "pink",
+      color: "#78AAF0",
     },
-    { shape: [[1, 1, 1, 1]], color: "green" },
+    { shape: [[1, 1, 1, 1]], color: "#F050BE" },
+    {
+      shape: [
+        [1, 1, 1],
+        [1, 1, 0],
+      ],
+      color: "orange",
+    },
   ];
   const n = shapeArray.length;
   currentShape = shapeArray[Math.floor(Math.random() * n)];
@@ -166,6 +177,7 @@ function gameLoop() {
 const messageBox = document.querySelector(".messages");
 const messageAdded = document.createElement("div");
 messageAdded.classList.add("message");
+messageAdded.classList.add("scoreInfo");
 messageAdded.textContent = "Game Over!";
 function update() {
   if (!checkCollision(currentShape.shape, posX, posY + 1)) {
@@ -193,7 +205,7 @@ let intervalId;
 function startInverval() {
   intervalId = setInterval(() => {
     gameRun1();
-  }, 1000);
+  }, 800);
 }
 
 startInverval();
@@ -248,11 +260,13 @@ const btnP = document.querySelector(".pause");
 // const btnC = document.querySelector(".continue");
 btnP.addEventListener("click", function () {
   clearInterval(intervalId);
+  bgMusic.pause();
 });
 //continue;
 const btnC = document.querySelector(".continue");
 btnC.addEventListener("click", function () {
   restartInterval();
+  bgMusic.play();
 });
 
 ////Restart the game
@@ -272,6 +286,7 @@ btnRe.addEventListener("click", function () {
   posY = 0;
   //loop the game;
   restartInterval();
+  bgMusic.play();
 });
 
 //when the shapes add up to the top, show message, the game ends, restart
